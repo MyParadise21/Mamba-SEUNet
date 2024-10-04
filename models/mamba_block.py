@@ -14,9 +14,9 @@ from mamba_ssm.ops.triton.layernorm import RMSNorm
 
 # github: https://github.com/state-spaces/mamba/blob/9127d1f47f367f5c9cc49c73ad73557089d02cb8/mamba_ssm/models/mixer_seq_simple.py
 def create_block(
-    d_model, cfg, n, layer_idx=0, rms_norm=True, fused_add_norm=False, residual_in_fp32=False,
+    d_model, cfg, layer_idx=0, rms_norm=True, fused_add_norm=False, residual_in_fp32=False,
     ):
-    d_state = cfg['model_cfg']['d_state'][n] # 16
+    d_state = cfg['model_cfg']['d_state'] # 16
     d_conv = cfg['model_cfg']['d_conv'] # 4
     expand = cfg['model_cfg']['expand'] # 4
     norm_epsilon = cfg['model_cfg']['norm_epsilon'] # 0.00001
@@ -36,11 +36,11 @@ def create_block(
     return block
 
 class MambaBlock(nn.Module):
-    def __init__(self, in_channels, cfg, n):
+    def __init__(self, in_channels, cfg):
         super(MambaBlock, self).__init__()
         n_layer = 1
-        self.forward_blocks  = nn.ModuleList( create_block(in_channels, cfg, n) for i in range(n_layer) )
-        self.backward_blocks = nn.ModuleList( create_block(in_channels, cfg, n) for i in range(n_layer) )
+        self.forward_blocks  = nn.ModuleList( create_block(in_channels, cfg) for i in range(n_layer) )
+        self.backward_blocks = nn.ModuleList( create_block(in_channels, cfg) for i in range(n_layer) )
 
         self.apply(
             partial(
@@ -76,14 +76,14 @@ class TFMambaBlock(nn.Module):
     tlinear (ConvTranspose1d): ConvTranspose1d layer for temporal dimension.
     flinear (ConvTranspose1d): ConvTranspose1d layer for frequency dimension.
     """
-    def __init__(self, cfg, inchannels, n):
+    def __init__(self, cfg, inchannels):
         super(TFMambaBlock, self).__init__()
         self.cfg = cfg
         self.hid_feature = inchannels
         
         # Initialize Mamba blocks
-        self.time_mamba = MambaBlock(in_channels=self.hid_feature, cfg=cfg, n=n)
-        self.freq_mamba = MambaBlock(in_channels=self.hid_feature, cfg=cfg, n=n)
+        self.time_mamba = MambaBlock(in_channels=self.hid_feature, cfg=cfg)
+        self.freq_mamba = MambaBlock(in_channels=self.hid_feature, cfg=cfg)
         
         # Initialize ConvTranspose1d layers
         self.tlinear = nn.ConvTranspose1d(self.hid_feature * 2, self.hid_feature, 1, stride=1)
