@@ -166,19 +166,19 @@ class SEMamba(nn.Module):
         # Initialize Mamba blocks
         self.patch_embed_encoder_level1 = Patch_Embed_stage(dim[0], dim[0])
 
-        self.TSMamba1_encoder = nn.ModuleList([TFMambaBlock(cfg, dim[0], 0) for _ in range(self.num_tscblocks)])
+        self.TSMamba1_encoder = nn.ModuleList([TFMambaBlock(cfg, dim[0]) for _ in range(self.num_tscblocks)])
 
         self.down1_2 = Downsample(dim[0], dim[1])
 
         self.patch_embed_encoder_level2 = Patch_Embed_stage(dim[1], dim[1])
 
-        self.TSMamba2_encoder = nn.ModuleList([TFMambaBlock(cfg, dim[1], 1) for _ in range(self.num_tscblocks)])
+        self.TSMamba2_encoder = nn.ModuleList([TFMambaBlock(cfg, dim[1]) for _ in range(self.num_tscblocks)])
 
         self.down2_3 = Downsample(dim[1], dim[2])
 
         self.patch_embed_middle = Patch_Embed_stage(dim[2], dim[2])
 
-        self.TSMamba_middle = nn.ModuleList([TFMambaBlock(cfg, dim[2], 2) for _ in range(self.num_tscblocks)])
+        self.TSMamba_middle = nn.ModuleList([TFMambaBlock(cfg, dim[2]) for _ in range(self.num_tscblocks)])
 
         ###########
 
@@ -190,7 +190,7 @@ class SEMamba(nn.Module):
 
         self.patch_embed_decoder_level2 = Patch_Embed_stage(dim[1], dim[1])
 
-        self.TSMamba2_decoder = nn.ModuleList([TFMambaBlock(cfg, dim[1], 1) for _ in range(self.num_tscblocks)])
+        self.TSMamba2_decoder = nn.ModuleList([TFMambaBlock(cfg, dim[1]) for _ in range(self.num_tscblocks)])
 
         self.up2_1 = Upsample(int(dim[1]), dim[0])
 
@@ -200,12 +200,12 @@ class SEMamba(nn.Module):
 
         self.patch_embed_decoder_level1 = Patch_Embed_stage(dim[0], dim[0])
 
-        self.TSMamba1_decoder = nn.ModuleList([TFMambaBlock(cfg, dim[0], 0) for _ in range(self.num_tscblocks)])
+        self.TSMamba1_decoder = nn.ModuleList([TFMambaBlock(cfg, dim[0]) for _ in range(self.num_tscblocks)])
 
         # 幅度
         self.mag_patch_embed_refinement = Patch_Embed_stage(dim[0], dim[0])
 
-        self.mag_refinement = nn.ModuleList([TFMambaBlock(cfg, dim[0], 0) for _ in range(self.num_tscblocks)])
+        self.mag_refinement = nn.ModuleList([TFMambaBlock(cfg, dim[0]) for _ in range(self.num_tscblocks)])
 
         self.mag_output = nn.Sequential(
             nn.Conv2d(dim[0], dim[0], kernel_size=3, stride=1, padding=1, bias=False),
@@ -215,7 +215,7 @@ class SEMamba(nn.Module):
         # 相位
         self.pha_patch_embed_refinement = Patch_Embed_stage(dim[0], dim[0])
 
-        self.pha_refinement = nn.ModuleList([TFMambaBlock(cfg, dim[0], 0) for _ in range(self.num_tscblocks)])
+        self.pha_refinement = nn.ModuleList([TFMambaBlock(cfg, dim[0]) for _ in range(self.num_tscblocks)])
 
         self.pha_output = nn.Sequential(
             nn.Conv2d(dim[0], dim[0], kernel_size=3, stride=1, padding=1, bias=False),
