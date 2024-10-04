@@ -139,7 +139,7 @@ class Upsample(nn.Module):
     def forward(self, x):
         return self.body(x)
 
-class SEMamba(nn.Module):
+class MambaSEUNet(nn.Module):
     """
     SEMamba model for speech enhancement using Mamba blocks.
     
@@ -153,7 +153,7 @@ class SEMamba(nn.Module):
         Args:
         - cfg: Configuration object containing model parameters.
         """
-        super(SEMamba, self).__init__()
+        super(MambaSEUNet, self).__init__()
         self.cfg = cfg
         self.num_tscblocks = cfg['model_cfg']['num_tfmamba'] if cfg['model_cfg']['num_tfmamba'] is not None else 4  # default tfmamba: 4
 
